@@ -1,7 +1,34 @@
 install.packages("readxl")
 library("readxl")
-data.foodprice <- read_excel(file.choose(), col_names = TRUE)
 
+reviews_data <- read_excel(file.choose(), col_names = TRUE)
+star_ratings <- c(reviews_data$printed_star)
+
+mean.total <- mean(star_ratings)
+stdev.total <- sd(star_ratings)/sqrt(length(star_ratings))
+
+upper.95.total <- mean.total + 2*stdev.total
+lower.95.total <- mean.total - 2*stdev.total
+
+barplot(table(star_ratings), xlab = ("Star Ratings for Trattoria Vico"), ylab = ("Number of reviews"))
+
+Local.stars <- reviews_data$printed_star[reviews_data$patron_type == 'local']
+Tourist.stars <- reviews_data$printed_star[reviews_data$patron_type == 'tourist']
+
+mean.local <- mean(Local.stars)
+stdev.local <- sd(Local.stars)/sqrt(length(Local.stars))
+
+upper.95.local <- mean.local + 2*stdev.local
+lower.95.local <- mean.local - 2*stdev.local
+
+mean.tourist <- mean(Tourist.stars)
+stdev.tourist <- sd(Tourist.stars)/sqrt(length(Tourist.stars))
+
+upper.95.tourist <- mean.tourist + 2*stdev.tourist
+lower.95.tourist <- mean.tourist - 2*stdev.tourist
+
+
+data.foodprice <- read_excel(file.choose(), col_names = TRUE)
 data.foodprice$food[data.foodprice$food == "NA"] <- NA
 data.foodprice$price[data.foodprice$price == "NA"] <- NA
 clean_data.food <- data.foodprice[!is.na(data.foodprice$food), ]
