@@ -1,8 +1,13 @@
+# load the readxl package so we can read in Excel files
 install.packages("readxl")
 library("readxl")
 
+# import the reviews data set and pull out the star ratings column
+
 reviews_data <- read_excel(file.choose(), col_names = TRUE)
 star_ratings <- c(reviews_data$printed_star)
+
+# calculate the mean, standard error, and 95% CI for all star ratings (Q2)
 
 mean.total <- mean(star_ratings)
 stdev.total <- sd(star_ratings)/sqrt(length(star_ratings))
@@ -10,10 +15,16 @@ stdev.total <- sd(star_ratings)/sqrt(length(star_ratings))
 upper.95.total <- mean.total + 2*stdev.total
 lower.95.total <- mean.total - 2*stdev.total
 
+# make a bar plot to visualize how the star ratings are distributed (Q3)
+
 barplot(table(star_ratings), xlab = ("Star Ratings for Trattoria Vico"), ylab = ("Number of reviews"))
+
+# split the star ratings into locals vs tourists
 
 Local.stars <- reviews_data$printed_star[reviews_data$patron_type == 'local']
 Tourist.stars <- reviews_data$printed_star[reviews_data$patron_type == 'tourist']
+
+# calculate the mean, standard error, and 95% CI for local patrons (Q4)
 
 mean.local <- mean(Local.stars)
 stdev.local <- sd(Local.stars)/sqrt(length(Local.stars))
@@ -21,18 +32,29 @@ stdev.local <- sd(Local.stars)/sqrt(length(Local.stars))
 upper.95.local <- mean.local + 2*stdev.local
 lower.95.local <- mean.local - 2*stdev.local
 
+# calculate the mean, standard error, and 95% CI for tourists (Q4)
+
 mean.tourist <- mean(Tourist.stars)
 stdev.tourist <- sd(Tourist.stars)/sqrt(length(Tourist.stars))
 
 upper.95.tourist <- mean.tourist + 2*stdev.tourist
 lower.95.tourist <- mean.tourist - 2*stdev.tourist
 
+# import the food/price data set where the food and price ratings are 
+# added from analysis of text reviews using an LLM
+
+# replace any "NA" text values with actual NAs (Q5)
 
 data.foodprice <- read_excel(file.choose(), col_names = TRUE)
 data.foodprice$food[data.foodprice$food == "NA"] <- NA
 data.foodprice$price[data.foodprice$price == "NA"] <- NA
+
+#remove rows missing food or price ratings (Q5)
+
 clean_data.food <- data.foodprice[!is.na(data.foodprice$food), ]
 clean_data.price <- data.foodprice[!is.na(data.foodprice$price), ]
+
+# convert food and price to numeric so we can run calculations on them
 
 class(clean_data.food$food)
 class(clean_data.price$price)
@@ -41,11 +63,15 @@ clean_data.price$price <- as.numeric(clean_data.price$price)
 mean(clean_data.food$food, na.rm = TRUE)
 mean(clean_data.price$price, na.rm = TRUE)
 
+# calculate the mean, standard error, and 95% CI for food on weekdays (Q6 a)
+
 xbar_foodweekday <- mean(clean_data.food$food[clean_data.food$day_type == "weekday"])
 weekdays <- length(clean_data.food$food[clean_data.food$day_type == "weekday"])
 sd_foodweekday <- sd(clean_data.food$food[clean_data.food$day_type == "weekday"]) / sqrt(weekdays)
 lower95_foodweekday <- xbar_foodweekday - 2*sd_foodweekday
 upper95_foodweekday <- xbar_foodweekday + 2*sd_foodweekday
+
+# calculate the mean, standard error, and 95% CI for food on weekends (Q6 a)
 
 xbar_foodweekend <- mean(clean_data.food$food[clean_data.food$day_type == "weekend"])
 weekends <- length(clean_data.food$food[clean_data.food$day_type == "weekend"])
@@ -53,11 +79,15 @@ sd_foodweekend <- sd(clean_data.food$food[clean_data.food$day_type == "weekend"]
 lower95_foodweekend <- xbar_foodweekend - 2*sd_foodweekend
 upper95_foodweekend <- xbar_foodweekend + 2*sd_foodweekend
 
+# calculate the mean, standard error, and 95% CI for price among local patrons (Q6 b)
+
 xbar_pricelocal <- mean(clean_data.price$price[clean_data.price$patron_type == "local"])
 locals <- length(clean_data.price$price[clean_data.price$patron_type == "local"])
 sd_pricelocal <- sd(clean_data.price$price[clean_data.price$patron_type == "local"]) / sqrt(locals)
 lower95_pricelocal <- xbar_pricelocal - 2*sd_pricelocal
 upper95_pricelocal <- xbar_pricelocal + 2*sd_pricelocal
+
+# calculate the mean, standard error, and 95% CI for price among tourists (Q6 b)
 
 xbar_pricetourist <- mean(clean_data.price$price[clean_data.price$patron_type == "tourist"])
 tourists <- length(clean_data.price$price[clean_data.price$patron_type == "tourist"])
